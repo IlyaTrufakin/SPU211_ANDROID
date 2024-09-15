@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">SPU211</string>
+    <string name="main_title">Основи Андроід</string>
+    <string name="main_calc">Калькулятор</string>
+    <string name="main_game">Гра</string>
+</resources>
