@@ -6,4 +6,17 @@
     <color name="main_title">#5A00FF</color>
     <color name="main_button_bg">#EEE6FF</color>
     <color name="main_button_foreground">#5100FF</color>
+
+
+
+    <!--              Calculator              -->
+    <color name="calc_background">#202020</color>
+    <color name="calc_button_dig">#4C4C4C</color>
+    <color name="calc_button_act">#323232</color>
+    <color name="calc_button_equal">#4CC1FE</color>
+    <color name="calc_button_foreground">#FEFEFE</color>
+    <color name="calc_history_foreground">#929292</color>
+    <color name="calc_result_foreground">#FEFEFE</color>
 </resources>
+
+

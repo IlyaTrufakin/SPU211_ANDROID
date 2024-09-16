@@ -1,9 +1,20 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- Base application theme. -->
     <style name="Base.Theme.SPU211" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item>
+        <item name="colorPrimary">@color/calc_button_dig</item>
+        <item name="colorSecondary">@color/calc_button_act</item>
+        <item name="colorSurface">@color/calc_background</item>
+        <item name="colorOnSurface">@color/calc_button_foreground</item>
+        <item name="buttonStyle">@style/Widget.Material3.Button</item>
+        <item name="buttonStyle">@style/calc_button_style</item>-->
     </style>
 
-    <style name="Theme.SPU211" parent="Base.Theme.SPU211" />
-</resources>
+    <style name="Theme.SPU211" parent="Base.Theme.SPU211">
+        <!--  <item name="buttonStyle">@style/calc_button_style</item>
+       <item name="customButtonStyle">@style/calc_button_style</item>-->
+   </style>
+
+
+   </resources>

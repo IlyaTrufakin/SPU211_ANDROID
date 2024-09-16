@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/calc_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/calc_background"
+    android:orientation="vertical"
+    tools:context=".CalcActivity">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="@string/calc_title"
+        android:textColor="@color/calc_result_foreground" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="bottom"
+        android:orientation="vertical">
+
+
+        <TextView
+            android:id="@+id/calc_tv_history"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_margin="10dp"
+            android:gravity="end"
+            android:textColor="@color/calc_history_foreground"
+            android:textSize="15sp"
+            tools:text="2+3 =" />
+
+
+        <TextView
+            android:id="@+id/calc_tv_result"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_margin="10dp"
+            android:gravity="end"
+            android:textColor="@color/calc_result_foreground"
+            android:textSize="35sp"
+            tools:text="5" />
+
+    </LinearLayout>
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="3dp">
+
+
+        <TableRow style="@style/calc_table_row_style">
+
+            <Button
+                style="@style/calc_button_style"
+                android:backgroundTint="@color/calc_button_act"
+                android:text="@string/calc_btn_percent" />
+
+            <Button
+                style="@style/calc_button_style"
+                android:backgroundTint="@color/calc_button_act"
+                android:text="@string/calc_btn_clear_entry_CE" />
+
+            <Button
+                style="@style/calc_button_style"
+                android:backgroundTint="@color/calc_button_act"
+                android:text="@string/calc_btn_clear_C" />
+
+            <Button
+                style="@style/calc_button_style"
+                android:backgroundTint="@color/calc_button_act"
+                android:text="@string/calc_btn_backspace" />
+        </TableRow>
+
+        <TableRow  style="@style/calc_table_row_style">
+
+            <Button
+                style="@style/calc_button_style"
+                android:backgroundTint="@color/calc_button_act"
+                android:text="@string/calc_btn_inverse" />
+
+            <Button
+                style="@style/calc_button_style"
+                android:backgroundTint="@color/calc_button_act"
+                android:text="@string/calc_btn_square" />
+
+            <Button
+                style="@style/calc_button_style"
+                android:backgroundTint="@color/calc_button_act"
+                android:text="@string/calc_btn_sqrt" />
+
+            <Button
+                style="@style/calc_button_style"
+                android:backgroundTint="@color/calc_button_act"
+                android:text="@string/calc_btn_operation_divide" />
+        </TableRow>
+
+        <TableRow  style="@style/calc_table_row_style">
+
+            <Button
+                style="@style/calc_button_style"
+                android:backgroundTint="@color/calc_button_dig"
+                android:text="@string/calc_btn_digit_7" />
+
+            <Button
+                style="@style/calc_button_style"
+                android:backgroundTint="@color/calc_button_dig"
+                android:text="@string/calc_btn_digit_8"
+                tools:ignore="VisualLintButtonSize" />
+
+            <Button
+                style="@style/calc_button_style"
+                android:backgroundTint="@color/calc_button_dig"
+                android:text="@string/calc_btn_digit_9" />
+
+            <Button
+                style="@style/calc_button_style"
+                android:backgroundTint="@color/calc_button_act"
+                android:text="@string/calc_btn_operation_multiply" />
+        </TableRow>
+
+        <TableRow  style="@style/calc_table_row_style">
+
+            <Button
+                style="@style/calc_button_style"
+                android:backgroundTint="@color/calc_button_dig"
+                android:text="@string/calc_btn_digit_4" />
+
+            <Button
+                style="@style/calc_button_style"
+                android:backgroundTint="@color/calc_button_dig"
+                android:text="@string/calc_btn_digit_5" />
+
+            <Button
+                style="@style/calc_button_style"
+                android:backgroundTint="@color/calc_button_dig"
+                android:text="@string/calc_btn_digit_6" />
+
+            <Button
+                style="@style/calc_button_style"
+                android:backgroundTint="@color/calc_button_act"
+                android:text="@string/calc_btn_operation_minus" />
+        </TableRow>
+
+        <TableRow  style="@style/calc_table_row_style">
+
+            <Button
+                style="@style/calc_button_style"
+                android:backgroundTint="@color/calc_button_dig"
+                android:text="@string/calc_btn_digit_1" />
+
+            <Button
+                style="@style/calc_button_style"
+                android:backgroundTint="@color/calc_button_dig"
+                android:text="@string/calc_btn_digit_2" />
+
+            <Button
+                style="@style/calc_button_style"
+                android:backgroundTint="@color/calc_button_dig"
+                android:text="@string/calc_btn_digit_3" />
+
+            <Button
+                style="@style/calc_button_style"
+                android:backgroundTint="@color/calc_button_act"
+                android:text="@string/calc_btn_operation_plus" />
+        </TableRow>
+
+
+        <TableRow style="@style/calc_table_row_style">
+
+            <Button
+                style="@style/calc_button_style"
+                android:backgroundTint="@color/calc_button_dig"
+                android:text="@string/calc_btn_sign_toggle" />
+
+            <Button
+                style="@style/calc_button_style"
+                android:backgroundTint="@color/calc_button_dig"
+                android:text="@string/calc_btn_digit_0" />
+
+            <Button
+                style="@style/calc_button_style"
+                android:backgroundTint="@color/calc_button_dig"
+                android:text="@string/calc_btn_dot" />
+
+            <Button
+                style="@style/calc_button_style"
+                android:backgroundTint="@color/calc_button_equal"
+                android:text="@string/calc_btn_equal"
+                tools:ignore="VisualLintButtonSize" />
+        </TableRow>
+
+    </TableLayout>
+
+
+</LinearLayout>

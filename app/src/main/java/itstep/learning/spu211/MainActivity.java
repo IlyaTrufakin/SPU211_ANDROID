@@ -1,5 +1,6 @@
 package itstep.learning.spu211;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -32,6 +33,12 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void onCalcClick(View view) {
-        Toast.makeText(this, "OnCalcClick", Toast.LENGTH_LONG).show();
+        //Toast.makeText(this, "OnCalcClick", Toast.LENGTH_LONG).show();
+        Intent activityIntent = new Intent(     //завдання для запуску
+                getApplicationContext(),        // як "наши", так і системні - фотоаппарат, тлф
+                CalcActivity.class              //після виконання буде поверненя до данного intent
+        );
+
+        startActivity( activityIntent);
     }
 }
