@@ -9,7 +9,7 @@
 
     <!--              Calculator       -->
     <string name="calc_title">Калькулятор</string>
-    <string name="calc_btn_digit_0">0</string>
+    <string name="calc_btn_digit_0">ʘ</string>
     <string name="calc_btn_digit_1">1</string>
     <string name="calc_btn_digit_2">2</string>
     <string name="calc_btn_digit_3">3</string>
@@ -19,7 +19,7 @@
     <string name="calc_btn_digit_7">7</string>
     <string name="calc_btn_digit_8">8</string>
     <string name="calc_btn_digit_9">9</string>
-    <string name="calc_btn_dot">.</string>
+    <string name="calc_btn_dot">,</string>
     <string name="calc_btn_operation_plus">+</string>
     <string name="calc_btn_operation_minus">—</string>
     <string name="calc_btn_operation_multiply">\u2715</string>
@@ -28,11 +28,15 @@
     <string name="calc_btn_sign_toggle">+/-</string>
     <string name="calc_btn_clear_C">C</string>
     <string name="calc_btn_clear_entry_CE">CE</string>
-    <string name="calc_btn_backspace">&lt;—</string>
+    <string name="calc_btn_backspace">\u232B</string>
     <string name="calc_btn_percent">%</string>
     <string name="calc_btn_square">x²</string>
     <string name="calc_btn_sqrt">√x</string>
     <string name="calc_btn_inverse">1/x</string>
-
+    <string name="calc_minusSign">\u2212</string>
+    <string name="calc_msgMaxDegReached">Max digits</string>
+    <string name="calc_msgTwoDots">Max dots reached</string>
+    <string name="calc_msgMinusZero">Unsigned Zero</string>
+    <string name="calc_msg_overflow">OVERFLOW</string>
     <!--              Game        -->
 </resources>

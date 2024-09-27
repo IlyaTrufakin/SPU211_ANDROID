@@ -8,7 +8,8 @@ android {
 
     defaultConfig {
         applicationId = "itstep.learning.spu211"
-        minSdk = 26
+        minSdk = 27
+        //noinspection OldTargetApi
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
