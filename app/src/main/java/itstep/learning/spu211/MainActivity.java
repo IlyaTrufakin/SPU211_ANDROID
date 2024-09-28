@@ -27,7 +27,8 @@ public class MainActivity extends AppCompatActivity {
         //R - resource
         Button calcButton = findViewById(R.id.main_calc_button);
         calcButton.setOnClickListener(this::onCalcClick);
-
+        findViewById(R.id.main_anim_button).setOnClickListener(this::onAnimClick);
+        findViewById(R.id.main_game_button).setOnClickListener(this::onGameClick);
     }
 
 
@@ -38,6 +39,21 @@ public class MainActivity extends AppCompatActivity {
                 CalcActivity.class              //після виконання буде поверненя до данного intent
         );
 
-        startActivity( activityIntent);
+        startActivity(activityIntent);
+    }
+
+    private void onAnimClick(View view) {
+        startActivity(new Intent(     //завдання для запуску
+                getApplicationContext(),        // як "наши", так і системні - фотоаппарат, тлф
+                AnimActivity.class));
+
+    }
+
+
+    private void onGameClick(View view) {
+        startActivity(new Intent(     //завдання для запуску
+                getApplicationContext(),        // як "наши", так і системні - фотоаппарат, тлф
+                GameActivity.class));
+
     }
 }
