@@ -33,10 +33,12 @@
     <string name="calc_btn_square">x²</string>
     <string name="calc_btn_sqrt">√x</string>
     <string name="calc_btn_inverse">1/x</string>
-    <string name="calc_minusSign">\u2212</string>
+    <string name="calc_view_minusSign">\u2212</string>
     <string name="calc_msgMaxDegReached">Max digits</string>
     <string name="calc_msgTwoDots">Max dots reached</string>
     <string name="calc_msgMinusZero">Unsigned Zero</string>
-    <string name="calc_msg_overflow">OVERFLOW</string>
+    <string name="calc_msg_overflow">Допустимое значение превышено</string>
+    <string name="calc_msg_div_by_zero">Ошибка: Деление на ноль</string>
+
     <!--              Game        -->
 </resources>

@@ -15,16 +15,37 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.BiFunction;
+
 public class CalcActivity extends AppCompatActivity {
     private final int maxDigits = 11;
+    //---- отображение
     private TextView tvHistory;
     private TextView tvResult;
-    private String zeroSign;
-    private String dotSign;
-    private String minusSign;
-    private String squareSign;
+    private String view_zeroSign;
+    private String view_dotSign;
+    private String view_minusSign;
     private String msgOverflow;
+
+    //---- операции
+    private String plusSign;
+    private String minusSign;
+    private String multiplySign;
+    private String divideSign;
+    private String squareSign;
+    private String sqrtSign;
+    private String percentSign;
+    private String inverseSign;
+    private int typeOfOperation = 0;
+    private Map<Integer, BiFunction<Double, Double, Double>> operations;
+    //---- операнды
+    private double firstOperand;
+    private double currentResult;
+    //---- логические флаги
     private boolean needClearResult;
+    private boolean isNewOperation = true;
 
 
     @SuppressLint("DiscouragedApi")
@@ -53,18 +74,35 @@ public class CalcActivity extends AppCompatActivity {
             return WindowInsetsCompat.CONSUMED;
         });
 
+        initializeOperations();
         tvHistory = findViewById(R.id.calc_tv_history);
         tvResult = findViewById(R.id.calc_tv_result);
-        zeroSign = getString(R.string.calc_btn_digit_0);
-        dotSign = getString(R.string.calc_btn_dot);
-        minusSign = getString(R.string.calc_minusSign);
+        view_zeroSign = getString(R.string.calc_btn_digit_0);
+        view_dotSign = getString(R.string.calc_btn_dot);
+        view_minusSign = getString(R.string.calc_view_minusSign);
+        plusSign = getString(R.string.calc_btn_operation_plus);
+        minusSign = getString(R.string.calc_btn_operation_minus);
+        multiplySign = getString(R.string.calc_btn_operation_multiply);
+        divideSign = getString(R.string.calc_btn_operation_divide);
         squareSign = getString(R.string.calc_btn_square);
+        sqrtSign = getString(R.string.calc_btn_sqrt);
+        percentSign = getString(R.string.calc_btn_percent);
+        inverseSign = getString(R.string.calc_btn_inverse);
         msgOverflow = getString(R.string.calc_msg_overflow);
         findViewById(R.id.calc_btn_clear_C).setOnClickListener(this::clearClick);
         findViewById(R.id.calc_btn_dot).setOnClickListener(this::dotClick);
         findViewById(R.id.calc_btn_sign_toggle).setOnClickListener(this::signToggleClick);
         findViewById(R.id.calc_btn_backspace).setOnClickListener(this::backspaceClick);
-        findViewById(R.id.calc_btn_square).setOnClickListener(this::squareClick);
+
+        findViewById(R.id.calc_btn_operation_plus).setOnClickListener(this::operationClick);
+        findViewById(R.id.calc_btn_operation_minus).setOnClickListener(this::operationClick);
+        findViewById(R.id.calc_btn_operation_multiply).setOnClickListener(this::operationClick);
+        findViewById(R.id.calc_btn_operation_divide).setOnClickListener(this::operationClick);
+        findViewById(R.id.calc_btn_square).setOnClickListener(this::operationClick);
+        findViewById(R.id.calc_btn_sqrt).setOnClickListener(this::operationClick);
+        findViewById(R.id.calc_btn_percent).setOnClickListener(this::operationClick);
+        findViewById(R.id.calc_btn_inverse).setOnClickListener(this::operationClick);
+        findViewById(R.id.calc_btn_equal).setOnClickListener(this::equalsClick);
         for (int i = 0; i < 10; i++) {
             findViewById(//R.id.calc_btn....
                     getResources() //R
@@ -84,53 +122,148 @@ public class CalcActivity extends AppCompatActivity {
 
     }
 
+
+    private void initializeOperations() {
+        operations = new HashMap<>();
+        operations.put(1, this::add);
+        operations.put(2, this::subtract);
+        operations.put(3, this::multiply);
+        operations.put(4, this::divide);
+        operations.put(5, this::square);
+        operations.put(6, this::sqrt);
+        operations.put(7, this::percent);
+        operations.put(8, this::inverse);
+    }
+
+
+    // Бинарные операции
+    private double add(double a, double b) { return a + b; }
+    private double subtract(double a, double b) { return a - b; }
+    private double multiply(double a, double b) { return a * b; }
+    private double divide(double a, double b) {
+        if (b == 0) throw new ArithmeticException("Division by zero");
+        return a / b;
+    }
+
+    // Унарные операции
+    private double percent(double a, double ignored) { return a / 100; }
+    private double square(double a, double ignored) { return a * a; }
+
+    private double sqrt(double a, double ignored) {
+        if (a < 0) throw new ArithmeticException("Square root of negative number");
+        return Math.sqrt(a);
+    }
+    private double inverse(double a, double ignored) {
+        if (a == 0) throw new ArithmeticException("Division by zero");
+        return 1 / a;
+    }
+
+
     /*
     при изменении конфигурации происходит пересбирание активности
     из-за перезапуска исчезают данные
     для их сохранения - необходимо использовать события жизненого цикла активности
      */
 
-    private void squareClick(View view) {
-        String result = tvResult.getText().toString();
-        tvHistory.setText(String.format("%s%s", result, squareSign));
-        result = result
-                .replace(zeroSign, "0")
-                .replace(minusSign, "-")
-                .replace(dotSign, ".");
-        double x = Double.parseDouble(result);
-        needClearResult = true;
-        showResult(x *x);
 
+    private void operationClick(View view) {
+        String operation = ((Button) view).getText().toString();
+        String result = tvResult.getText().toString();
+        double operand = parseResult(result);
+
+        int operationType;
+        if (operation.equals(plusSign)) operationType = 1;
+        else if (operation.equals(minusSign)) operationType = 2;
+        else if (operation.equals(multiplySign)) operationType = 3;
+        else if (operation.equals(divideSign)) operationType = 4;
+        else if (operation.equals(squareSign)) operationType = 5;
+        else if (operation.equals(sqrtSign)) operationType = 6;
+        else if (operation.equals(percentSign)) operationType = 7;
+        else if (operation.equals(inverseSign)) operationType = 8;
+        else return;
+
+        if (operationType <= 4) { // Бинарные операции
+            if (!isNewOperation) {
+                equalsClick(null);
+            }
+            firstOperand = operand;
+            currentResult = firstOperand;
+            typeOfOperation = operationType;
+            tvHistory.setText(String.format("%s %s", result, operation));
+            needClearResult = true;
+            isNewOperation = false;
+        } else { // Унарные операции
+            BiFunction<Double, Double, Double> unaryOperation = operations.get(operationType);
+            if (unaryOperation != null) {
+                try {
+                    double newResult = unaryOperation.apply(operand, 0.0); // Игнорируем второй аргумент
+                    String history = String.format("%s(%s)", operation, result);
+                    showResult(newResult, history);
+                } catch (ArithmeticException e) {
+                    Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
+            needClearResult = true;
+            isNewOperation = true;
+        }
     }
 
 
-    private void showResult (double x) {
-        if(x >= 1e11 || x<= - 1e11) {
+    private void equalsClick(View view) {
+        if (typeOfOperation == 0) return;
+
+        String result = tvResult.getText().toString();
+        String history = tvHistory.getText().toString();
+        double secondOperand = parseResult(result);
+
+        BiFunction<Double, Double, Double> operation = operations.get(typeOfOperation);
+        if (operation != null) {
+            try {
+                currentResult = operation.apply(currentResult, secondOperand);
+                history += " " + result + " =";
+                showResult(currentResult, history);
+            } catch (ArithmeticException e) {
+                Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+
+        needClearResult = true;
+        isNewOperation = true;
+        typeOfOperation = 0;
+    }
+
+
+
+    private void showResult(double x, String history) {
+        if (x >= 1e11 || x <= -1e11) {
             tvResult.setText(msgOverflow);
             return;
         }
 
         String result = x == (int) x
                 ? String.valueOf((int)x)
-                :String.valueOf(x);
+                : String.valueOf(x);
 
         result = result
-                .replace("0", zeroSign)
-                  .replace("-", minusSign)
-                   .replace(".", dotSign);
+                .replace("0", view_zeroSign)
+                .replace("-", view_minusSign)
+                .replace(".", view_dotSign);
+
         int limit = maxDigits;
-        if(result.startsWith(minusSign)){
-            limit +=1;
+        if (result.startsWith(view_minusSign)) {
+            limit += 1;
         }
-        if(result.contains(dotSign)){
-            limit +=1;
+        if (result.contains(view_dotSign)) {
+            limit += 1;
         }
-        if(result.length() > limit) {
-            result =result.substring(0 , limit);
+        if (result.length() > limit) {
+            result = result.substring(0, limit);
         }
 
         tvResult.setText(result);
-
+        tvHistory.setText(history);
     }
       /*
     операции
@@ -142,20 +275,26 @@ public class CalcActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
         //outState - map которая сохраняет разл. типы данных по принципу ключ-значение
         outState.putCharSequence("savedResult", tvResult.getText());
+        outState.putCharSequence("savedHistory", tvHistory.getText());
         outState.putBoolean("needClearResult", needClearResult);
+        outState.putDouble("firstOperand", firstOperand);
     }
 
     @Override
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         tvResult.setText(savedInstanceState.getCharSequence("savedResult"));
+        tvHistory.setText(savedInstanceState.getCharSequence("savedHistory"));
         needClearResult = savedInstanceState.getBoolean("needClearResult");
-
+        firstOperand = savedInstanceState.getDouble("firstOperand");
     }
 
     private void clearClick(View view) {
         tvHistory.setText("");
-        tvResult.setText(zeroSign);
+        tvResult.setText(view_zeroSign);
+        currentResult = 0;
+        isNewOperation = true;
+        typeOfOperation = 0;
     }
 
     private void digitClick(View view) {
@@ -165,7 +304,7 @@ public class CalcActivity extends AppCompatActivity {
             Toast.makeText(this, R.string.calc_msgMaxDegReached, Toast.LENGTH_SHORT).show();
             return;
         }
-        if (zeroSign.equals(result)) {
+        if (view_zeroSign.equals(result)) {
             result = "";
         }
         result += ((Button) view).getText();
@@ -174,8 +313,8 @@ public class CalcActivity extends AppCompatActivity {
 
     private void dotClick(View view) {
         String res = tvResult.getText().toString();
-        if (res.contains(dotSign)) {
-            if (res.endsWith(dotSign)) {
+        if (res.contains(view_dotSign)) {
+            if (res.endsWith(view_dotSign)) {
                 res = res.substring(0, res.length() - 1);
 
             } else {
@@ -184,14 +323,14 @@ public class CalcActivity extends AppCompatActivity {
             }
 
         } else {
-            res = res + dotSign;
+            res = res + view_dotSign;
         }
         tvResult.setText(res);
     }
 
     private void signToggleClick(View view) {
         String res = tvResult.getText().toString();
-        if (zeroSign.equals(res)) {
+        if (view_zeroSign.equals(res)) {
             Toast.makeText(this, R.string.calc_msgMinusZero, Toast.LENGTH_SHORT).show();
             return;
         }
@@ -209,10 +348,10 @@ public class CalcActivity extends AppCompatActivity {
         if (len > 1) {
             result = result.substring(0, len - 1);
             if (minusSign.equals(result)) {
-                result = zeroSign;
+                result = view_zeroSign;
             }
         } else {
-            result = zeroSign;
+            result = view_zeroSign;
         }
         tvResult.setText(result);
     }
@@ -223,11 +362,17 @@ public class CalcActivity extends AppCompatActivity {
         if (input.startsWith(minusSign)) {
             ret -= 1;
         }
-        if (input.contains(dotSign)) {
+        if (input.contains(view_dotSign)) {
             ret -= 1;
         }
         return ret;
 
     }
 
+    private double parseResult(String result) {
+        return Double.parseDouble(result
+                .replace(view_zeroSign, "0")
+                .replace(minusSign, "-")
+                .replace(view_dotSign, "."));
+    }
 }
