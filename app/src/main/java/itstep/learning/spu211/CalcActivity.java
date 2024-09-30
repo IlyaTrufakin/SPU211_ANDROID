@@ -28,6 +28,8 @@ public class CalcActivity extends AppCompatActivity {
     private String view_dotSign;
     private String view_minusSign;
     private String msgOverflow;
+    private StringBuilder accumulatedHistory;
+    private History operationHistory;
 
     //---- операции
     private String plusSign;
@@ -39,13 +41,16 @@ public class CalcActivity extends AppCompatActivity {
     private String percentSign;
     private String inverseSign;
     private int typeOfOperation = 0;
-    private Map<Integer, BiFunction<Double, Double, Double>> operations;
+    private HashMap<Integer, BiFunction<Double, Double, Double>> operations;
     //---- операнды
+    private StringBuilder currentInput;
     private double firstOperand;
+    private double SecondOperand;
     private double currentResult;
     //---- логические флаги
     private boolean needClearResult;
     private boolean isNewOperation = true;
+    private boolean isWaitingForSecondOperand = false;
 
 
     @SuppressLint("DiscouragedApi")
@@ -61,8 +66,8 @@ public class CalcActivity extends AppCompatActivity {
         ViewCompat.setOnApplyWindowInsetsListener(container, (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
 
-         //   v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-         //   return insets;
+            //   v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            //   return insets;
 
             ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
             params.topMargin = systemBars.top;
@@ -74,6 +79,8 @@ public class CalcActivity extends AppCompatActivity {
             return WindowInsetsCompat.CONSUMED;
         });
 
+        operationHistory = new History();
+        currentInput = new StringBuilder();
         initializeOperations();
         tvHistory = findViewById(R.id.calc_tv_history);
         tvResult = findViewById(R.id.calc_tv_result);
@@ -107,12 +114,10 @@ public class CalcActivity extends AppCompatActivity {
             findViewById(//R.id.calc_btn....
                     getResources() //R
                             .getIdentifier(//id
-                                    "calc_btn_digit_" + i,
-                                    "id",
-                                    getPackageName()
-                            )
-            ).setOnClickListener(this::digitClick);
+                                    "calc_btn_digit_" + i, "id", getPackageName())).setOnClickListener(this::digitClick);
         }
+
+        accumulatedHistory = new StringBuilder();
 
         if (savedInstanceState == null) {
             this.clearClick(null);
@@ -137,22 +142,37 @@ public class CalcActivity extends AppCompatActivity {
 
 
     // Бинарные операции
-    private double add(double a, double b) { return a + b; }
-    private double subtract(double a, double b) { return a - b; }
-    private double multiply(double a, double b) { return a * b; }
+    private double add(double a, double b) {
+        return a + b;
+    }
+
+    private double subtract(double a, double b) {
+        return a - b;
+    }
+
+    private double multiply(double a, double b) {
+        return a * b;
+    }
+
     private double divide(double a, double b) {
         if (b == 0) throw new ArithmeticException("Division by zero");
         return a / b;
     }
 
     // Унарные операции
-    private double percent(double a, double ignored) { return a / 100; }
-    private double square(double a, double ignored) { return a * a; }
+    private double percent(double a, double ignored) {
+        return a / 100;
+    }
+
+    private double square(double a, double ignored) {
+        return a * a;
+    }
 
     private double sqrt(double a, double ignored) {
         if (a < 0) throw new ArithmeticException("Square root of negative number");
         return Math.sqrt(a);
     }
+
     private double inverse(double a, double ignored) {
         if (a == 0) throw new ArithmeticException("Division by zero");
         return 1 / a;
@@ -169,7 +189,7 @@ public class CalcActivity extends AppCompatActivity {
     private void operationClick(View view) {
         String operation = ((Button) view).getText().toString();
         String result = tvResult.getText().toString();
-        double operand = parseResult(result);
+        double operand = parseNumber(result);
 
         int operationType;
         if (operation.equals(plusSign)) operationType = 1;
@@ -185,11 +205,15 @@ public class CalcActivity extends AppCompatActivity {
         if (operationType <= 4) { // Бинарные операции
             if (!isNewOperation) {
                 equalsClick(null);
+            } else if (accumulatedHistory.length() == 0) {
+                accumulatedHistory.append(result);
             }
             firstOperand = operand;
             currentResult = firstOperand;
             typeOfOperation = operationType;
-            tvHistory.setText(String.format("%s %s", result, operation));
+            accumulatedHistory.append(" ").append(operation).append(" ");
+            //tvHistory.setText(String.format("%s %s", result, operation));
+            tvHistory.setText(accumulatedHistory.toString());
             needClearResult = true;
             isNewOperation = false;
         } else { // Унарные операции
@@ -197,8 +221,11 @@ public class CalcActivity extends AppCompatActivity {
             if (unaryOperation != null) {
                 try {
                     double newResult = unaryOperation.apply(operand, 0.0); // Игнорируем второй аргумент
-                    String history = String.format("%s(%s)", operation, result);
-                    showResult(newResult, history);
+                    String operationStr = String.format("%s(%s)", operation, result);
+                    accumulatedHistory.append(operationStr);
+                    showResult(newResult, accumulatedHistory.toString());
+                    //String history = String.format("%s(%s)", operation, result);
+                    //showResult(newResult, history);
                 } catch (ArithmeticException e) {
                     Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
                     return;
@@ -214,15 +241,18 @@ public class CalcActivity extends AppCompatActivity {
         if (typeOfOperation == 0) return;
 
         String result = tvResult.getText().toString();
-        String history = tvHistory.getText().toString();
-        double secondOperand = parseResult(result);
+        //String history = tvHistory.getText().toString();
+        double secondOperand = parseNumber(result);
 
         BiFunction<Double, Double, Double> operation = operations.get(typeOfOperation);
         if (operation != null) {
             try {
                 currentResult = operation.apply(currentResult, secondOperand);
-                history += " " + result + " =";
-                showResult(currentResult, history);
+                accumulatedHistory.append(result).append(" = ").append(currentResult);
+
+                showResult(currentResult, accumulatedHistory.toString());
+                // history += " " + result + " =";
+                // showResult(currentResult, history);
             } catch (ArithmeticException e) {
                 Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
                 return;
@@ -234,7 +264,14 @@ public class CalcActivity extends AppCompatActivity {
         typeOfOperation = 0;
     }
 
+    private void updateView() {
+        if (currentResult >= 1e11 || currentResult <= -1e11) {
+            tvResult.setText(msgOverflow);
+            return;
+        }
 
+        tvResult.setText(doubleToString(currentResult));
+    }
 
     private void showResult(double x, String history) {
         if (x >= 1e11 || x <= -1e11) {
@@ -242,14 +279,10 @@ public class CalcActivity extends AppCompatActivity {
             return;
         }
 
-        String result = x == (int) x
-                ? String.valueOf((int)x)
-                : String.valueOf(x);
 
-        result = result
-                .replace("0", view_zeroSign)
-                .replace("-", view_minusSign)
-                .replace(".", view_dotSign);
+        String result = x == (int) x ? String.valueOf((int) x) : String.valueOf(x);
+
+        result = result.replace("0", view_zeroSign).replace("-", view_minusSign).replace(".", view_dotSign);
 
         int limit = maxDigits;
         if (result.startsWith(view_minusSign)) {
@@ -278,6 +311,7 @@ public class CalcActivity extends AppCompatActivity {
         outState.putCharSequence("savedHistory", tvHistory.getText());
         outState.putBoolean("needClearResult", needClearResult);
         outState.putDouble("firstOperand", firstOperand);
+        outState.putString("accumulatedHistory", accumulatedHistory.toString());
     }
 
     @Override
@@ -287,6 +321,8 @@ public class CalcActivity extends AppCompatActivity {
         tvHistory.setText(savedInstanceState.getCharSequence("savedHistory"));
         needClearResult = savedInstanceState.getBoolean("needClearResult");
         firstOperand = savedInstanceState.getDouble("firstOperand");
+        accumulatedHistory = new StringBuilder(savedInstanceState.getString("accumulatedHistory", ""));
+        tvHistory.setText(accumulatedHistory.toString());
     }
 
     private void clearClick(View view) {
@@ -295,20 +331,38 @@ public class CalcActivity extends AppCompatActivity {
         currentResult = 0;
         isNewOperation = true;
         typeOfOperation = 0;
+        accumulatedHistory.setLength(0);
     }
 
     private void digitClick(View view) {
-        String result = needClearResult ? "" : tvResult.getText().toString();
-        needClearResult = false;
-        if (digitLength(result) >= maxDigits) {
+        if (needClearResult) {
+            currentInput.setLength(0);
+            needClearResult = false;
+        }
+
+        if (currentInput.length() >= maxDigits) {
             Toast.makeText(this, R.string.calc_msgMaxDegReached, Toast.LENGTH_SHORT).show();
             return;
         }
-        if (view_zeroSign.equals(result)) {
-            result = "";
+        currentInput.append(((Button) view).getText());
+        try {
+            currentResult = Double.parseDouble(currentInput
+                    .toString()
+                    .trim()
+                    .replace(view_zeroSign, "0")
+                    .replace(minusSign, "-")
+                    .replace(view_dotSign, "."));
+
+            if (currentResult == 0){
+                currentInput.setLength(0);
+            }
+
+        } catch (NumberFormatException e) {
+            currentInput.setLength(0);
+            currentResult = 0;
         }
-        result += ((Button) view).getText();
-        tvResult.setText(result);
+
+        updateView();
     }
 
     private void dotClick(View view) {
@@ -369,10 +423,83 @@ public class CalcActivity extends AppCompatActivity {
 
     }
 
-    private double parseResult(String result) {
+    private double parseNumber(String result) {
         return Double.parseDouble(result
                 .replace(view_zeroSign, "0")
                 .replace(minusSign, "-")
                 .replace(view_dotSign, "."));
+    }
+
+    //doubleOperationToString
+    private String doubleToString(double x) { //}, int typeOfOperation) {
+        //String operationSign;
+
+        String result = x == (int) x ? String.valueOf((int) x) : String.valueOf(x);
+
+        result = result
+                .replace("0", view_zeroSign)
+                .replace("-", view_minusSign)
+                .replace(".", view_dotSign);
+
+
+        return result;//String.format("%s (%s)", result, operationSign);
+    }
+
+
+    //------------ класс для хранения историей операций ---------------
+    private final class History {
+        private final StringBuilder history;
+
+        public History() {
+            history = new StringBuilder();
+        }
+
+        // Метод для добавления новой операции в историю
+        public void addOperationToHistory(String number, int typeOfOperation) {
+            String operationSign;
+            switch (typeOfOperation) {
+                case 1:
+                    operationSign = plusSign;
+                    break;
+                case 2:
+                    operationSign = minusSign;
+                    break;
+                case 3:
+                    operationSign = multiplySign;
+                    break;
+                case 4:
+                    operationSign = divideSign;
+                    break;
+                case 5:
+                    operationSign = squareSign;
+                    break;
+                case 6:
+                    operationSign = sqrtSign;
+                    break;
+                case 7:
+                    operationSign = percentSign;
+                    break;
+                case 8:
+                    operationSign = inverseSign;
+                    break;
+                default:
+                    operationSign = "="; // По умолчанию =, если тип операции не указан
+            }
+            history.append(number).append(" ").append(operationSign).append(" ");  // Добавляем операцию и перенос строки
+        }
+
+        public void clearHistory() {
+            history.setLength(0);
+        }
+
+        public String getHistory() {
+            return history.toString();
+        }
+
+        public boolean isEmpty() {
+            return history.length() == 0;
+        }
+
+
     }
 }
