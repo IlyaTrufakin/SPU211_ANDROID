@@ -374,6 +374,7 @@ public class CalcActivity extends AppCompatActivity {
             } else {
                 Toast.makeText(this, R.string.calc_msgTwoDots, Toast.LENGTH_SHORT).show();
                 return;
+
             }
 
         } else {
