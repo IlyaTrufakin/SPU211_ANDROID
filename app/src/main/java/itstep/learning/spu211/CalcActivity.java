@@ -267,10 +267,12 @@ public class CalcActivity extends AppCompatActivity {
     private void updateView() {
         if (currentResult >= 1e11 || currentResult <= -1e11) {
             tvResult.setText(msgOverflow);
-            return;
+        } else {
+            tvResult.setText(doubleToString(currentResult));
         }
+        tvHistory.setText(operationHistory.getHistory());
 
-        tvResult.setText(doubleToString(currentResult));
+
     }
 
     private void showResult(double x, String history) {
@@ -311,7 +313,6 @@ public class CalcActivity extends AppCompatActivity {
         outState.putCharSequence("savedHistory", tvHistory.getText());
         outState.putBoolean("needClearResult", needClearResult);
         outState.putDouble("firstOperand", firstOperand);
-        outState.putString("accumulatedHistory", accumulatedHistory.toString());
     }
 
     @Override
@@ -321,17 +322,18 @@ public class CalcActivity extends AppCompatActivity {
         tvHistory.setText(savedInstanceState.getCharSequence("savedHistory"));
         needClearResult = savedInstanceState.getBoolean("needClearResult");
         firstOperand = savedInstanceState.getDouble("firstOperand");
-        accumulatedHistory = new StringBuilder(savedInstanceState.getString("accumulatedHistory", ""));
-        tvHistory.setText(accumulatedHistory.toString());
+
     }
 
     private void clearClick(View view) {
-        tvHistory.setText("");
+        operationHistory.clearHistory();
+        tvHistory.setText(operationHistory.getHistory());
         tvResult.setText(view_zeroSign);
         currentResult = 0;
         isNewOperation = true;
         typeOfOperation = 0;
-        accumulatedHistory.setLength(0);
+        firstOperand = 0;
+
     }
 
     private void digitClick(View view) {
@@ -353,7 +355,7 @@ public class CalcActivity extends AppCompatActivity {
                     .replace(minusSign, "-")
                     .replace(view_dotSign, "."));
 
-            if (currentResult == 0){
+            if (currentResult == 0) {
                 currentInput.setLength(0);
             }
 
@@ -492,6 +494,7 @@ public class CalcActivity extends AppCompatActivity {
         public void clearHistory() {
             history.setLength(0);
         }
+
 
         public String getHistory() {
             return history.toString();

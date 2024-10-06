@@ -7,10 +7,16 @@
 
     <!--              Animation       -->
     <string name="animation_title">Анимация</string>
+    <string name="animation_name_FadeIn">Прозорість</string>
+    <string name="animation_name_Scale1">Масштаб 1</string>
+    <string name="animation_name_Rotate">Обертання</string>
+    <string name="animation_name_Scale2">Масштаб 2</string>
 
-    <!--              Game       -->
-    <string name="game_title">Game</string>
-
+    <!-- region Game -->
+    <string name="game_title">Swipe: game</string>
+    <string name="game_main_text">2048</string>
+    <string name="game_score_tpl">SCORE\n%d</string>
+    <!-- endregion -->
 
 
     <!-- region             Calculator       -->
@@ -45,6 +51,7 @@
     <string name="calc_msgMinusZero">Unsigned Zero</string>
     <string name="calc_msg_overflow">Допустимое значение превышено</string>
     <string name="calc_msg_div_by_zero">Ошибка: Деление на ноль</string>
+
 
     <!-- endregion             Game        -->
 </resources>

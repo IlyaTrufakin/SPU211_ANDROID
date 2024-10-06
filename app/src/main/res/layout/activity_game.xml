@@ -6,74 +6,180 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:padding="10dp"
     tools:context=".GameActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:padding="10dp">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="2048" />
+            style="@style/game_btn"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_marginEnd="10dp"
+            android:layout_weight="1.2"
+            android:background="@drawable/rounded_corners"
+            android:gravity="center"
+            android:text="@string/game_main_text"
+            android:textColor="@color/white"
+            android:textSize="45sp"
+            android:textStyle="bold" />
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="2"
             android:orientation="vertical">
 
             <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"></Button>
+                <TextView
+                    android:id="@+id/score"
+                    style="@style/game_top_right"
+                    tools:text="SCORE\n520"
+                    />
 
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"></Button>
+                <TextView
+                    style="@style/game_top_right"
+                    android:text="REST\n520" />
             </LinearLayout>
-
 
             <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
                 <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"></Button>
+                    style="@style/game_bottom_right"
+                    android:letterSpacing="0.19"
+                    android:text="NEW"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
 
                 <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/calc_btn_dot">
-
-
-                </Button>
+                    style="@style/game_bottom_right"
+                    android:letterSpacing="0.03"
+                    android:text="UNDO"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
             </LinearLayout>
-
-
         </LinearLayout>
-
-
     </LinearLayout>
 
-
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:text="ГРА">
-
-
-    </TextView>
-
-
-    <TableLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="7dp"
+        android:gravity="center"
+        android:text="@string/game_title"
+        />
 
+    <LinearLayout
+        android:orientation="vertical"
+        android:id="@+id/game_field"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@color/grey_game_background"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="2dp">
 
-    </TableLayout>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_width="match_parent">
+
+            <TextView
+                android:id="@+id/game_cell_00"
+                style="@style/game_cell_0" />
+
+            <TextView
+                android:id="@+id/game_cell_01"
+                style="@style/game_cell_0" />
+
+            <TextView
+                android:id="@+id/game_cell_02"
+                style="@style/game_cell_0" />
+
+            <TextView
+                android:id="@+id/game_cell_03"
+                style="@style/game_cell_0" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_width="match_parent">
+
+            <TextView
+                android:id="@+id/game_cell_10"
+                style="@style/game_cell_0" />
+
+            <TextView
+                android:id="@+id/game_cell_11"
+                style="@style/game_cell_0" />
+
+            <TextView
+                android:id="@+id/game_cell_12"
+                style="@style/game_cell_0" />
+
+            <TextView
+                android:id="@+id/game_cell_13"
+                style="@style/game_cell_0" />
+        </LinearLayout>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_width="match_parent">
+
+            <TextView
+                android:id="@+id/game_cell_20"
+                style="@style/game_cell_0" />
+
+            <TextView
+                android:id="@+id/game_cell_21"
+                style="@style/game_cell_0" />
+
+            <TextView
+                android:id="@+id/game_cell_22"
+                style="@style/game_cell_0" />
+
+            <TextView
+                android:id="@+id/game_cell_23"
+                style="@style/game_cell_0" />
+        </LinearLayout>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_width="match_parent">
+
+            <TextView
+                android:id="@+id/game_cell_30"
+                style="@style/game_cell_0" />
+
+            <TextView
+                android:id="@+id/game_cell_31"
+                style="@style/game_cell_0" />
+
+            <TextView
+                android:id="@+id/game_cell_32"
+                style="@style/game_cell_0" />
+
+            <TextView
+                android:id="@+id/game_cell_33"
+                style="@style/game_cell_0" />
+        </LinearLayout>
+
+    </LinearLayout>
 </LinearLayout>

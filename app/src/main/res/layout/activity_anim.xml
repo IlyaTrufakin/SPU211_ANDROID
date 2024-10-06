@@ -5,9 +5,9 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:clipChildren="false"
     android:clipToPadding="false"
+    android:orientation="vertical"
     tools:context=".AnimActivity">
 
     <TextView
@@ -22,75 +22,132 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:paddingHorizontal="10dp"
+        android:baselineAligned="false"
         android:clipChildren="false"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingHorizontal="10dp">
 
-        <View
-            android:id="@+id/anim_v_alpha"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_margin="10dp"
-            android:background="@color/calc_button_equal"/>
+        <LinearLayout style="@style/anim_base_block">
 
-        <View
-            android:id="@+id/anim_v_scale1"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_margin="10dp"
-            android:background="@color/calc_button_equal"/>
+            <LinearLayout
+                android:id="@+id/anim_v_alpha"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/anim_text_block"
+                    android:text="@string/animation_name_FadeIn" />
+
+                <View style="@style/anim_view_block" />
+            </LinearLayout>
+        </LinearLayout>
+
+
+        <LinearLayout style="@style/anim_base_block">
+
+            <LinearLayout
+                android:id="@+id/anim_v_scale1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/anim_text_block"
+                    android:text="@string/animation_name_Scale1" />
+
+                <View style="@style/anim_view_block" />
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
+
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:paddingHorizontal="10dp"
         android:clipChildren="false"
         android:clipToPadding="false"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingHorizontal="10dp">
 
-        <View
-            android:id="@+id/anim_v_rotate1"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_margin="10dp"
-            android:background="@color/calc_button_equal"/>
+        <LinearLayout style="@style/anim_base_block">
 
-        <View
-            android:id="@+id/anim_v_scale2"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_margin="10dp"
-            android:background="@color/calc_button_equal"/>
+            <LinearLayout
+                android:id="@+id/anim_v_rotate1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/anim_text_block"
+                    android:text="@string/animation_name_Rotate" />
+
+                <View style="@style/anim_view_block" />
+            </LinearLayout>
+        </LinearLayout>
+
+
+        <LinearLayout style="@style/anim_base_block">
+
+            <LinearLayout
+                android:id="@+id/anim_v_scale2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/anim_text_block"
+                    android:text="@string/animation_name_Scale2" />
+
+                <View style="@style/anim_view_block" />
+            </LinearLayout>
+        </LinearLayout>
+
+
     </LinearLayout>
 
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="150dp"
-        android:paddingHorizontal="10dp"
         android:clipChildren="false"
         android:clipToPadding="false"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingHorizontal="10dp">
 
-        <View
-            android:id="@+id/anim_v_transe1"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_margin="10dp"
-            android:background="@color/calc_button_equal"/>
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_margin="10dp"
-            />
+        <LinearLayout style="@style/anim_base_block">
+
+            <LinearLayout
+                android:id="@+id/anim_v_transe1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/anim_text_block"
+                    android:text="@string/animation_name_Rotate" />
+
+                <View style="@style/anim_view_block" />
+            </LinearLayout>
+        </LinearLayout>
+
+
+        <LinearLayout style="@style/anim_base_block">
+
+            <LinearLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/anim_text_block"
+                    android:text="@string/animation_name_Rotate" />
+
+                <View style="@style/anim_view_block" />
+            </LinearLayout>
+        </LinearLayout>
 
     </LinearLayout>
 
