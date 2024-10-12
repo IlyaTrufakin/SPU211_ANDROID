@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
         calcButton.setOnClickListener(this::onCalcClick);
         findViewById(R.id.main_anim_button).setOnClickListener(this::onAnimClick);
         findViewById(R.id.main_game_button).setOnClickListener(this::onGameClick);
+        findViewById(R.id.main_rates_button).setOnClickListener(this::onRatesClick);
     }
 
 
@@ -54,6 +55,13 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent(     //завдання для запуску
                 getApplicationContext(),        // як "наши", так і системні - фотоаппарат, тлф
                 GameActivity.class));
+
+    }
+
+    private void onRatesClick(View view) {
+        startActivity(new Intent(     //завдання для запуску
+                getApplicationContext(),        // як "наши", так і системні - фотоаппарат, тлф
+                RatesActivity.class));
 
     }
 }

@@ -1,8 +1,11 @@
 package itstep.learning.spu211;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
+import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
@@ -10,32 +13,44 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class GameActivity extends AppCompatActivity {
     private final int N = 4;
+    private final String bestScoreFilename = "best_score.dat";
     private final Random random = new Random();
 
     private int[][] cells = new int[N][N];
     private TextView[][] tvCells = new TextView[N][N];
     private Animation fadeInAnimation;
     private TextView tvScore;
+    private TextView tvBestScore;
     private long score;
+    private long bestScore;
 
-    @SuppressLint({"DiscouragedApi", "ClickableViewAccessibility"})
+    @SuppressLint({"DiscouragedApi", "ClickableViewAccessibility", "MissingInflatedId"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
         LinearLayout gameField = findViewById(R.id.game_field);
         tvScore = findViewById(R.id.score);
+        tvBestScore = findViewById(R.id.game_tv_best_score);
+        findViewById(R.id.game_btn_undo).setOnClickListener(this::undoClick);
         gameField.post(() -> {
 
             int w = this.getWindow().getDecorView().getWidth();
@@ -109,8 +124,58 @@ public class GameActivity extends AppCompatActivity {
 
     private void startGame() {
         addScore(-score);
+        loadMaxScore();
+        showMaxScore();
         spawnCell();
     }
+
+    private void undoClick(View view){
+new AlertDialog.Builder(this,
+        com.google.android.material.R.style.Base_Theme_AppCompat_Dialog)
+        .setIcon(android.R.drawable.ic_dialog_info)
+        .setTitle("Dialog example")
+        .setMessage("Приклад модального діалогу")
+        .setCancelable(true)
+        .setPositiveButton("Добре", (dialog, which) -> {})
+        .setNegativeButton("Закрити", (dialog, which) -> this.finish())
+        .setNeutralButton("Нова гра", (dialog, which) -> this.startGame())
+        .show();
+    }
+
+    private void saveMaxScore() {
+        try (FileOutputStream fos = openFileOutput(
+                bestScoreFilename,
+                Context.MODE_PRIVATE);
+             DataOutputStream writer = new DataOutputStream(fos);
+        ) {
+            writer.writeLong(bestScore);
+            writer.flush();
+        } catch (IOException ex) {
+            Log.e("SaveMaxScore", "fos" + ex.getMessage());
+        }
+    }
+
+    private void loadMaxScore() {
+        try (FileInputStream fis = openFileInput(
+                bestScoreFilename);
+             DataInputStream Reader = new DataInputStream(fis);
+        ) {
+            bestScore = Reader.readLong();
+        } catch (IOException ex) {
+            Log.e("loadMaxScore", "fis" + ex.getMessage());
+        }
+    }
+
+
+    private void showMaxScore() {
+        tvBestScore.setText(
+                getString(
+                        R.string.game_best_score_tpl,
+                        bestScore
+                )
+        );
+    }
+
 
     private void addScore(long value) {
         score += value;
@@ -120,6 +185,11 @@ public class GameActivity extends AppCompatActivity {
                         score
                 )
         );
+        if(score>bestScore){
+            bestScore = score;
+            saveMaxScore();
+            showMaxScore();
+        }
     }
 
     @SuppressLint("DiscouragedApi")

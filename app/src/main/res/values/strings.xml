@@ -4,18 +4,26 @@
     <string name="main_title">Основи Андроід</string>
     <string name="main_calc">Калькулятор</string>
     <string name="main_game">Анимация</string>
+    <string name="main_rates_title">Курси валют</string>
 
-    <!--              Animation       -->
+    <!-- region             Animation       -->
     <string name="animation_title">Анимация</string>
     <string name="animation_name_FadeIn">Прозорість</string>
     <string name="animation_name_Scale1">Масштаб 1</string>
     <string name="animation_name_Rotate">Обертання</string>
     <string name="animation_name_Scale2">Масштаб 2</string>
+    <!-- endregion -->
 
     <!-- region Game -->
-    <string name="game_title">Swipe: game</string>
+    <string name="game_title">Гра</string>
     <string name="game_main_text">2048</string>
     <string name="game_score_tpl">SCORE\n%d</string>
+    <string name="game_best_score_tpl">BEST\n%d</string>
+    <!-- endregion -->
+
+
+    <!-- region             Rates       -->
+    <string name="rates_title">Курси валют НБУ</string>
     <!-- endregion -->
 
 
@@ -51,7 +59,7 @@
     <string name="calc_msgMinusZero">Unsigned Zero</string>
     <string name="calc_msg_overflow">Допустимое значение превышено</string>
     <string name="calc_msg_div_by_zero">Ошибка: Деление на ноль</string>
-
-
     <!-- endregion             Game        -->
+
+
 </resources>
