@@ -59,7 +59,7 @@
                 <Button
                     android:id="@+id/game_btn_new"
                     style="@style/game_bottom_right"
-                    android:letterSpacing="0.19"
+                    android:letterSpacing="0.03"
                     android:text="NEW"
                     android:textSize="18sp"
                     android:textStyle="bold" />

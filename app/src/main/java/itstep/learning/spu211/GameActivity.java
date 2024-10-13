@@ -112,7 +112,7 @@ public class GameActivity extends AppCompatActivity {
                         if (moveDown()) {
                             spawnCell();
                         } else {
-                            Toast.makeText(GameActivity.this, "onSwipeBottom", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(GameActivity.this, "Немає ходу", Toast.LENGTH_SHORT).show();
                         }
                     }
 
@@ -139,7 +139,7 @@ public class GameActivity extends AppCompatActivity {
                         if (moveUp()) {
                             spawnCell();
                         } else {
-                            Toast.makeText(GameActivity.this, "onSwipeTop", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(GameActivity.this, "Немає ходу", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
