@@ -91,6 +91,13 @@
         <item name="android:layout_marginVertical">7dp</item>
         <item name="android:layout_marginEnd">7dp</item>
     </style>
+
+    <style name="game_cell_wrapper">
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+
     <style name="game_cell" parent="game_btn">
         <item name="android:layout_height">match_parent</item>
         <item name="android:gravity">center</item>

@@ -1,5 +1,7 @@
 package itstep.learning.spu211;
 
+import static java.lang.Math.abs;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
@@ -7,6 +9,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -18,6 +21,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.dynamicanimation.animation.SpringAnimation;
+import androidx.dynamicanimation.animation.SpringForce;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -33,14 +38,19 @@ public class GameActivity extends AppCompatActivity {
     private final int N = 4;
     private final String bestScoreFilename = "best_score.dat";
     private final Random random = new Random();
-
+    private int[][] visualEffectTable = new int[N][N];
     private int[][] cells = new int[N][N];
     private TextView[][] tvCells = new TextView[N][N];
     private Animation fadeInAnimation;
+    private Animation scale1Animation;
+    private Animation rotate1Animation;
     private TextView tvScore;
     private TextView tvBestScore;
     private long score;
     private long bestScore;
+    SpringAnimation springAnim;
+    SpringForce spring = new SpringForce();
+    SpringForce spring2 = new SpringForce();
 
     @SuppressLint({"DiscouragedApi", "ClickableViewAccessibility", "MissingInflatedId"})
     @Override
@@ -51,6 +61,8 @@ public class GameActivity extends AppCompatActivity {
         tvScore = findViewById(R.id.score);
         tvBestScore = findViewById(R.id.game_tv_best_score);
         findViewById(R.id.game_btn_undo).setOnClickListener(this::undoClick);
+        findViewById(R.id.game_btn_new).setOnClickListener(this::newClick);
+
         gameField.post(() -> {
 
             int w = this.getWindow().getDecorView().getWidth();
@@ -77,21 +89,31 @@ public class GameActivity extends AppCompatActivity {
                 );
             }
         }
-        int val = 0;
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
-                cells[i][j] = val;
-
-            }
-        }
+        clearGameCells();
+        // load animation
+        scale1Animation = AnimationUtils.loadAnimation(this, R.anim.scale_1);
+        scale1Animation.reset();
         fadeInAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_in);
         fadeInAnimation.reset();
+        rotate1Animation = AnimationUtils.loadAnimation(this, R.anim.rotate_1);
+        rotate1Animation.reset();
+
+        spring.setFinalPosition(0f);  // Конечная позиция пружины
+        spring.setStiffness(SpringForce.STIFFNESS_LOW);  // Жесткость пружины (сила сопротивления)
+        spring.setDampingRatio(SpringForce.DAMPING_RATIO_HIGH_BOUNCY);  // Коэффициент затухания (количество "отскоков")
+        spring2.setFinalPosition(0f);  // Конечная позиция пружины
+        spring2.setStiffness(SpringForce.STIFFNESS_LOW);  // Жесткость пружины (сила сопротивления)
+        spring2.setDampingRatio(SpringForce.DAMPING_RATIO_HIGH_BOUNCY);  // Коэффициент затухания (количество "отскоков")
+
         gameField.setOnTouchListener(
                 new SwipeTouchListener(this) {
                     @Override
                     public void onSwipeBottom() {
-                        spawnCell();
-                        Toast.makeText(GameActivity.this, "onSwipeBottom", Toast.LENGTH_SHORT).show();
+                        if (moveDown()) {
+                            spawnCell();
+                        } else {
+                            Toast.makeText(GameActivity.this, "onSwipeBottom", Toast.LENGTH_SHORT).show();
+                        }
                     }
 
                     @Override
@@ -114,13 +136,28 @@ public class GameActivity extends AppCompatActivity {
 
                     @Override
                     public void onSwipeTop() {
-                        spawnCell();
-                        Toast.makeText(GameActivity.this, "onSwipeTop", Toast.LENGTH_SHORT).show();
+                        if (moveUp()) {
+                            spawnCell();
+                        } else {
+                            Toast.makeText(GameActivity.this, "onSwipeTop", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
 
         startGame();
     }
+
+
+    private void clearGameCells() {
+        int val = 0;
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                cells[i][j] = val;
+                visualEffectTable[i][j] = val;
+            }
+        }
+    }
+
 
     private void startGame() {
         addScore(-score);
@@ -129,18 +166,26 @@ public class GameActivity extends AppCompatActivity {
         spawnCell();
     }
 
-    private void undoClick(View view){
-new AlertDialog.Builder(this,
-        com.google.android.material.R.style.Base_Theme_AppCompat_Dialog)
-        .setIcon(android.R.drawable.ic_dialog_info)
-        .setTitle("Dialog example")
-        .setMessage("Приклад модального діалогу")
-        .setCancelable(true)
-        .setPositiveButton("Добре", (dialog, which) -> {})
-        .setNegativeButton("Закрити", (dialog, which) -> this.finish())
-        .setNeutralButton("Нова гра", (dialog, which) -> this.startGame())
-        .show();
+    private void undoClick(View view) {
+        new AlertDialog.Builder(this,
+                com.google.android.material.R.style.Base_Theme_AppCompat_Dialog)
+                .setIcon(android.R.drawable.ic_dialog_info)
+                .setTitle("Dialog example")
+                .setMessage("Приклад модального діалогу")
+                .setCancelable(true)
+                .setPositiveButton("Добре", (dialog, which) -> {
+                })
+                .setNegativeButton("Закрити", (dialog, which) -> this.finish())
+                .setNeutralButton("Нова гра", (dialog, which) -> this.startGame())
+                .show();
     }
+
+
+    private void newClick(View view) {
+        clearGameCells();
+        startGame();
+    }
+
 
     private void saveMaxScore() {
         try (FileOutputStream fos = openFileOutput(
@@ -185,7 +230,7 @@ new AlertDialog.Builder(this,
                         score
                 )
         );
-        if(score>bestScore){
+        if (score > bestScore) {
             bestScore = score;
             saveMaxScore();
             showMaxScore();
@@ -196,6 +241,31 @@ new AlertDialog.Builder(this,
     private void showField() {
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
+
+
+                //animation for changed cells
+                if (abs(visualEffectTable[i][j]) == 4) {
+                    tvCells[i][j].startAnimation(scale1Animation);
+                    visualEffectTable[i][j] = 0;
+
+                } else if (abs(visualEffectTable[i][j]) == 8) {
+                    tvCells[i][j].startAnimation(rotate1Animation);
+                    visualEffectTable[i][j] = 0;
+                } else if (visualEffectTable[i][j] > 0 && visualEffectTable[i][j] >= 16) {
+                    SpringAnimation springAnim = new SpringAnimation(tvCells[i][j], SpringAnimation.TRANSLATION_X, 0);
+                    springAnim.setSpring(spring);
+                    springAnim.setStartVelocity(2000);  // Начальная скорость
+                    springAnim.start();
+                    visualEffectTable[i][j] = 0;
+                } else if (visualEffectTable[i][j] < 0 && visualEffectTable[i][j] <= -16) {
+                    SpringAnimation springAnim = new SpringAnimation(tvCells[i][j], SpringAnimation.TRANSLATION_Y, 0);
+                    springAnim.setSpring(spring2);
+                    springAnim.setStartVelocity(2000);  // Начальная скорость
+                    springAnim.start();
+                    visualEffectTable[i][j] = 0;
+                }
+
+
                 tvCells[i][j].setText(String.valueOf(cells[i][j]));
                 int val = cells[i][j];
                 if (val > 4096) val = 4096;
@@ -220,88 +290,253 @@ new AlertDialog.Builder(this,
         }
     }
 
-    private boolean moveLeft() {
-
+    private boolean moveUp() {
         boolean wasMove = false;
-        for (int i = 0; i < N; i++) {
 
-            int pos1 = -1;
-            for (int j = 0; j < N; j++) {
-                if (cells[i][j] != 0) {
-                    if (pos1 != -1) {
-                        if (cells[i][pos1] == cells[i][j]) {  // з'єднання
-                            cells[i][pos1] += cells[i][j];
-                            cells[i][j] = 0;
-                            addScore(cells[i][pos1]);
-                            pos1 = -1;
-                            wasMove = true;
-                        } else {
-                            pos1 = j;
-                        }
-                    } else {
-                        pos1 = j;
+        for (int j = 0; j < N; j++) {
+            int index = 0; // Следующая позиция для размещения плитки сверху
+            int previous = 0; // Хранит значение предыдущей плитки
+            int previousIndex = -1; // Хранит индекс предыдущей плитки
+
+            for (int i = 0; i < N; i++) {
+                int current = cells[i][j];
+                if (current == 0) {
+                    continue; // Пропускаем пустые ячейки
+                }
+
+                if (previous == 0) {
+                    // Нет предыдущей плитки для сравнения, сохраняем текущую как предыдущую
+                    previous = current;
+                    previousIndex = i;
+                } else if (previous == current) {
+                    // Объединяем плитки
+                    cells[index][j] = previous + current;
+                    addScore(cells[index][j]);
+                    visualEffectTable[index][j] = -cells[index][j]; // Отмечаем позицию объединения
+                    if (index != previousIndex || index != i) {
+                        wasMove = true; // Плитки были перемещены или объединены
                     }
+                    index++;
+                    previous = 0;
+                    previousIndex = -1;
+                } else {
+                    // Перемещаем предыдущую плитку в текущую позицию index
+                    cells[index][j] = previous;
+                    if (index != previousIndex) {
+                        wasMove = true; // Плитка была перемещена
+                    }
+                    index++;
+                    previous = current;
+                    previousIndex = i;
                 }
             }
 
+            if (previous != 0) {
+                // Размещаем последнюю плитку, если она не была объединена
+                cells[index][j] = previous;
+                if (index != previousIndex) {
+                    wasMove = true; // Плитка была перемещена
+                }
+                index++;
+            }
 
-            pos1 = -1;  // позиція нуля
-            for (int j = 0; j < N; j++) {
-                if (cells[i][j] == 0) {
-                    if (pos1 == -1) pos1 = j;
-                } else {
-                    if (pos1 != -1) {
-                        cells[i][pos1] = cells[i][j];
-                        cells[i][j] = 0;
-                        pos1++;
-                        wasMove = true;
-                    }
+            // Устанавливаем оставшиеся ячейки в ноль
+            for (int k = index; k < N; k++) {
+                if (cells[k][j] != 0) {
+                    cells[k][j] = 0;
+                    wasMove = true;
                 }
             }
         }
+
+        return wasMove;
+    }
+
+    private boolean moveDown() {
+        boolean wasMove = false;
+
+        for (int j = 0; j < N; j++) {
+            int index = N - 1; // Следующая позиция для размещения плитки
+            int previous = 0; // Хранит значение предыдущей плитки
+            int previousIndex = -1; // Хранит индекс предыдущей плитки
+
+            for (int i = N - 1; i >= 0; i--) {
+                int current = cells[i][j];
+                if (current == 0) {
+                    continue; // Пропускаем пустые ячейки
+                }
+
+                if (previous == 0) {
+                    // Нет предыдущей плитки для сравнения, сохраняем текущую как предыдущую
+                    previous = current;
+                    previousIndex = i;
+                } else if (previous == current) {
+                    // Объединяем плитки
+                    cells[index][j] = previous + current;
+                    addScore(cells[index][j]);
+                    visualEffectTable[index][j] = -cells[index][j]; // Отмечаем позицию объединения
+                    if (index != previousIndex || index != i) {
+                        wasMove = true; // Плитки были перемещены или объединены
+                    }
+                    index--;
+                    previous = 0;
+                    previousIndex = -1;
+                } else {
+                    // Перемещаем предыдущую плитку в следующую позицию
+                    cells[index][j] = previous;
+                    if (index != previousIndex) {
+                        wasMove = true; // Плитка была перемещена
+                    }
+                    index--;
+                    previous = current;
+                    previousIndex = i;
+                }
+            }
+
+            if (previous != 0) {
+                // Размещаем последнюю плитку, если она не была объединена
+                cells[index][j] = previous;
+                if (index != previousIndex) {
+                    wasMove = true; // Плитка была перемещена
+                }
+                index--;
+            }
+
+            // Устанавливаем оставшиеся ячейки в ноль
+            for (int k = index; k >= 0; k--) {
+                if (cells[k][j] != 0) {
+                    cells[k][j] = 0;
+                    wasMove = true;
+                }
+            }
+        }
+
+        return wasMove;
+    }
+
+    private boolean moveLeft() {
+        boolean wasMove = false;
+
+        for (int i = 0; i < N; i++) {
+            int index = 0; // Следующая позиция для размещения плитки
+            int previous = 0; // Хранит значение предыдущей плитки
+            int previousIndex = -1; // Хранит индекс предыдущей плитки
+
+            for (int j = 0; j < N; j++) {
+                int current = cells[i][j];
+                if (current == 0) {
+                    continue; // Пропускаем пустые ячейки
+                }
+
+                if (previous == 0) {
+                    // Нет предыдущей плитки для сравнения, сохраняем текущую как предыдущую
+                    previous = current;
+                    previousIndex = j;
+                } else if (previous == current) {
+                    // Объединяем плитки
+                    cells[i][index] = previous + current;
+                    addScore(cells[i][index]);
+                    visualEffectTable[i][index] = cells[i][index]; // Отмечаем позицию объединения
+                    if (index != previousIndex || index != j) {
+                        wasMove = true; // Плитки были перемещены или объединены
+                    }
+                    index++;
+                    previous = 0;
+                    previousIndex = -1;
+                } else {
+                    // Перемещаем предыдущую плитку в следующую позицию
+                    cells[i][index] = previous;
+                    if (index != previousIndex) {
+                        wasMove = true; // Плитка была перемещена
+                    }
+                    index++;
+                    previous = current;
+                    previousIndex = j;
+                }
+            }
+
+            if (previous != 0) {
+                // Размещаем последнюю плитку, если она не была объединена
+                cells[i][index] = previous;
+                if (index != previousIndex) {
+                    wasMove = true; // Плитка была перемещена
+                }
+                index++;
+            }
+
+            // Устанавливаем оставшиеся ячейки в ноль
+            for (int k = index; k < N; k++) {
+                if (cells[i][k] != 0) {
+                    cells[i][k] = 0;
+                    wasMove = true;
+                }
+            }
+        }
+
         return wasMove;
     }
 
     private boolean moveRight() {
         boolean wasMove = false;
-        for (int i = 0; i < N; i++) {  //цикл по рядках
 
-            int pos1 = -1;
+        for (int i = 0; i < N; i++) {
+            int index = N - 1; // Следующая позиция для размещения плитки справа
+            int previous = 0; // Хранит значение предыдущей плитки
+            int previousIndex = -1; // Хранит индекс предыдущей плитки
+
             for (int j = N - 1; j >= 0; j--) {
-                if (cells[i][j] != 0) {
-                    if (pos1 != -1) {  //раніше було число лівіше
-                        if (cells[i][pos1] == cells[i][j]) {
-                            cells[i][pos1] += cells[i][j];
-                            cells[i][j] = 0;
-                            addScore(cells[i][pos1]);
-                            pos1 = -1;
-                            wasMove = true;
-                        } else {
-                            pos1 = j;
-                        }
-                    } else {
-                        pos1 = j;
+                int current = cells[i][j];
+                if (current == 0) {
+                    continue; // Пропускаем пустые ячейки
+                }
+
+                if (previous == 0) {
+                    // Нет предыдущей плитки для сравнения, сохраняем текущую как предыдущую
+                    previous = current;
+                    previousIndex = j;
+                } else if (previous == current) {
+                    // Объединяем плитки
+                    cells[i][index] = previous + current;
+                    addScore(cells[i][index]);
+                    visualEffectTable[i][index] = cells[i][index]; // Отмечаем позицию объединения
+                    if (index != previousIndex || index != j) {
+                        wasMove = true; // Плитки были перемещены или объединены
                     }
+                    index--;
+                    previous = 0;
+                    previousIndex = -1;
+                } else {
+                    // Перемещаем предыдущую плитку в текущую позицию index
+                    cells[i][index] = previous;
+                    if (index != previousIndex) {
+                        wasMove = true; // Плитка была перемещена
+                    }
+                    index--;
+                    previous = current;
+                    previousIndex = j;
                 }
             }
 
-            pos1 = -1;
-            for (int j = N - 1; j >= 0; j--) {
-                if (cells[i][j] == 0) {
-                    if (pos1 == -1) pos1 = j;
-                } else {
-                    if (pos1 != -1) {
-                        cells[i][pos1] = cells[i][j];
-                        cells[i][j] = 0;
-                        pos1--;
-                        wasMove = true;
-                    }
+            if (previous != 0) {
+                // Размещаем последнюю плитку, если она не была объединена
+                cells[i][index] = previous;
+                if (index != previousIndex) {
+                    wasMove = true; // Плитка была перемещена
+                }
+                index--;
+            }
+
+            // Устанавливаем оставшиеся ячейки в ноль
+            for (int k = index; k >= 0; k--) {
+                if (cells[i][k] != 0) {
+                    cells[i][k] = 0;
+                    wasMove = true;
                 }
             }
         }
+
         return wasMove;
     }
-
 
     private boolean spawnCell() {
         List<Coord> coords = new ArrayList<>();
