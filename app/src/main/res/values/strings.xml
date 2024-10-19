@@ -5,6 +5,7 @@
     <string name="main_calc">Калькулятор</string>
     <string name="main_game">Анимация</string>
     <string name="main_rates_title">Курси валют</string>
+    <string name="main_chat_title">Чат</string>
 
     <!-- region             Animation       -->
     <string name="animation_title">Анимация</string>
@@ -20,6 +21,17 @@
     <string name="game_score_tpl">SCORE\n%d</string>
     <string name="game_best_score_tpl">BEST\n%d</string>
     <!-- endregion -->
+
+
+    <!-- region Chat -->
+    <string name="chat_title">Чат</string>
+    <string name="chat_nik">Nik: </string>
+    <string name="chat_nik_default">TIM</string>
+    <string name="chat_msg">Msg: </string>
+    <string name="chat_semantic_send">Send: </string>
+    <string name="chat_msg_default">Привет! </string>
+    <!-- endregion -->
+
 
 
     <!-- region             Rates       -->

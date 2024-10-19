@@ -21,6 +21,9 @@
     <color name="calc_result_foreground">#FEFEFE</color>
 
 
+
+    <color name="chat_message_background">#D0D0D0</color>
+
     <!-- region Game -->
     <color name="yellow_game_background">#E9CA00</color>
     <color name="grey_game_background">#AC9F7E</color>

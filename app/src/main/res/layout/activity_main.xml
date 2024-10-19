@@ -89,6 +89,20 @@
             app:backgroundTint="@null"
             />
 
+        <Button
+            android:id="@+id/main_chat_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/main_chat_title"
+            android:background="@color/main_button_bg"
+            android:textColor="@color/main_button_foreground"
+            android:textSize="25sp"
+            android:layout_marginTop="30dp"
+            android:paddingVertical="10dp"
+            android:textStyle="bold"
+            app:backgroundTint="@null"
+            />
+
 
     </LinearLayout>
 
