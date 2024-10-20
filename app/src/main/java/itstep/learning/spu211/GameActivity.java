@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,6 +41,7 @@ public class GameActivity extends AppCompatActivity {
     private final Random random = new Random();
     private int[][] visualEffectTable = new int[N][N];
     private int[][] cells = new int[N][N];
+    private int[][] cellsForUndo = new int[N][N];
     private TextView[][] tvCells = new TextView[N][N];
     private Animation fadeInAnimation;
     private Animation scale1Animation;
@@ -48,6 +50,9 @@ public class GameActivity extends AppCompatActivity {
     private TextView tvBestScore;
     private long score;
     private long bestScore;
+    private long prevScore;                    // Для хранения предыдущего счета
+    private boolean canUndo = false;
+    private Button undoButton;
     SpringAnimation springAnim;
     SpringForce spring = new SpringForce();
     SpringForce spring2 = new SpringForce();
@@ -60,6 +65,7 @@ public class GameActivity extends AppCompatActivity {
         LinearLayout gameField = findViewById(R.id.game_field);
         tvScore = findViewById(R.id.score);
         tvBestScore = findViewById(R.id.game_tv_best_score);
+        undoButton = findViewById(R.id.game_btn_undo);
         findViewById(R.id.game_btn_undo).setOnClickListener(this::undoClick);
         findViewById(R.id.game_btn_new).setOnClickListener(this::newClick);
 
@@ -109,38 +115,46 @@ public class GameActivity extends AppCompatActivity {
                 new SwipeTouchListener(this) {
                     @Override
                     public void onSwipeBottom() {
+                        saveState();
                         if (moveDown()) {
                             spawnCell();
                         } else {
                             Toast.makeText(GameActivity.this, "Немає ходу", Toast.LENGTH_SHORT).show();
                         }
+                        updateUndoButtonState(); // Обновляем состояние кнопки Undo
                     }
 
                     @Override
                     public void onSwipeLeft() {
+                        saveState();
                         if (moveLeft()) {
                             spawnCell();
                         } else {
                             Toast.makeText(GameActivity.this, "Немає ходу", Toast.LENGTH_SHORT).show();
                         }
+                        updateUndoButtonState(); // Обновляем состояние кнопки Undo
                     }
 
                     @Override
                     public void onSwipeRight() {
+                        saveState();
                         if (moveRight()) {
                             spawnCell();
                         } else {
                             Toast.makeText(GameActivity.this, "Немає ходу", Toast.LENGTH_SHORT).show();
                         }
+                        updateUndoButtonState(); // Обновляем состояние кнопки Undo
                     }
 
                     @Override
                     public void onSwipeTop() {
+                        saveState();
                         if (moveUp()) {
                             spawnCell();
                         } else {
                             Toast.makeText(GameActivity.this, "Немає ходу", Toast.LENGTH_SHORT).show();
                         }
+                        updateUndoButtonState(); // Обновляем состояние кнопки Undo
                     }
                 });
 
@@ -160,25 +174,49 @@ public class GameActivity extends AppCompatActivity {
 
 
     private void startGame() {
+        saveState();
+        canUndo = false;
         addScore(-score);
         loadMaxScore();
         showMaxScore();
         spawnCell();
     }
 
+
     private void undoClick(View view) {
-        new AlertDialog.Builder(this,
-                com.google.android.material.R.style.Base_Theme_AppCompat_Dialog)
-                .setIcon(android.R.drawable.ic_dialog_info)
-                .setTitle("Dialog example")
-                .setMessage("Приклад модального діалогу")
-                .setCancelable(true)
-                .setPositiveButton("Добре", (dialog, which) -> {
-                })
-                .setNegativeButton("Закрити", (dialog, which) -> this.finish())
-                .setNeutralButton("Нова гра", (dialog, which) -> this.startGame())
-                .show();
+        if (canUndo) {
+            restoreState();
+        } else {
+            Toast.makeText(this, "Нечего откатывать", Toast.LENGTH_SHORT).show();
+        }
+        updateUndoButtonState(); // Обновляем состояние кнопки Undo
     }
+
+
+    private void updateUndoButtonState() {
+        if (canUndo) {
+            undoButton.setTextAppearance(this, R.style.game_bottom_undo_Enable); // Применяем стиль для активного состояния
+            undoButton.setEnabled(true); // Включаем кнопку
+        } else {
+            undoButton.setTextAppearance(this, R.style.game_bottom_undo_Disable); // Применяем стиль для неактивного состояния
+            undoButton.setEnabled(false); // Отключаем кнопку
+        }
+    }
+
+
+//    private void undoClick(View view) {
+//        new AlertDialog.Builder(this,
+//                com.google.android.material.R.style.Base_Theme_AppCompat_Dialog)
+//                .setIcon(android.R.drawable.ic_dialog_info)
+//                .setTitle("Dialog example")
+//                .setMessage("Приклад модального діалогу")
+//                .setCancelable(true)
+//                .setPositiveButton("Добре", (dialog, which) -> {
+//                })
+//                .setNegativeButton("Закрити", (dialog, which) -> this.finish())
+//                .setNeutralButton("Нова гра", (dialog, which) -> this.startGame())
+//                .show();
+//    }
 
 
     private void newClick(View view) {
@@ -239,6 +277,7 @@ public class GameActivity extends AppCompatActivity {
 
     @SuppressLint("DiscouragedApi")
     private void showField() {
+
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
 
@@ -556,10 +595,30 @@ public class GameActivity extends AppCompatActivity {
 
         cells[randomCoord.i][randomCoord.j] = random.nextInt(10) == 0 ? 4 : 2;
         tvCells[randomCoord.i][randomCoord.j].startAnimation(fadeInAnimation);
-
+        canUndo = true;
         showField();
         return true;
     }
+
+
+    private void saveState() {
+        for (int i = 0; i < N; i++) {
+            System.arraycopy(cells[i], 0, cellsForUndo[i], 0, N);
+        }
+        prevScore = score;
+    }
+
+    private void restoreState() {
+        for (int i = 0; i < N; i++) {
+            System.arraycopy(cellsForUndo[i], 0, cells[i], 0, N);
+        }
+        score = prevScore;
+        showField(); // Обновляем отображение поля
+        tvScore.setText(getString(R.string.game_score_tpl, score)); // Обновляем отображение счета
+        canUndo = false; //
+
+    }
+
 
     static class Coord {
         int i;

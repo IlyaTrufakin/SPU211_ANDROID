@@ -31,7 +31,7 @@
 
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="2"
             android:orientation="vertical">
 
@@ -68,7 +68,7 @@
 
                 <Button
                     android:id="@+id/game_btn_undo"
-                    style="@style/game_bottom_right"
+                    style="@style/game_bottom_undo_Enable"
                     android:letterSpacing="0.03"
                     android:text="UNDO"
                     android:textSize="18sp"

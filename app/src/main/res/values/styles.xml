@@ -78,23 +78,33 @@
         <item name="android:layout_marginEnd">10dp</item>
     </style>
     <style name="game_top_right" parent="game_btn">
-        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
         <item name="android:background">@drawable/game_btn_top_right_bottom_with_background</item>
-        <item name="android:layout_marginEnd">7dp</item>
+        <item name="android:layout_margin">3dp</item>
         <item name="android:gravity">center</item>
-        <item name="android:paddingVertical">10dp</item>
-        <item name="android:drawablePadding">10dp</item>
     </style>
     <style name="game_bottom_right" parent="game_btn">
-        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
         <item name="android:background">@drawable/game_btn_top_right_with_background</item>
-        <item name="android:layout_marginEnd">7dp</item>
+        <item name="android:layout_margin">3dp</item>
+        <item name="android:padding">0dp</item>
         <item name="android:gravity">center</item>
-        <item name="android:paddingVertical">10dp</item>
-        <item name="android:drawablePadding">10dp</item>
+    </style>
 
+    <style name="game_bottom_undo_Disable" parent="game_btn">
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@drawable/game_btn_undo_disable</item>
+        <item name="android:layout_margin">3dp</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:gravity">center</item>
+    </style>
 
-
+    <style name="game_bottom_undo_Enable" parent="game_btn">
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@drawable/game_btn_undo_enable</item>
+        <item name="android:layout_margin">3dp</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:gravity">center</item>
     </style>
 
     <style name="game_cell_wrapper">
